@@ -896,21 +896,26 @@
                 this.animatePath( connLine, pathString );
             }
             else {
-                connLine = this._R.path( pathString );
+		connLine = this._R.path(pathString);
                 this.connectionStore[treeNode.id] = connLine;
 
                 // don't show connector arrows por pseudo nodes
-                if ( treeNode.pseudo ) {
+                if (treeNode.pseudo) {
                     delete parent.connStyle.style['arrow-end'];
                 }
-                if ( parent.pseudo ) {
+                if (parent.pseudo) {
                     delete parent.connStyle.style['arrow-start'];
                 }
+		
+		// https://github.com/fperucic/treant-js/issues/103
+                if (treeNode.parentConnector) {
+                    connLine.attr(treeNode.parentConnector.style)
+                } else {
+                    connLine.attr(parent.connStyle.style);
+                }
 
-                connLine.attr( parent.connStyle.style );
-
-                if ( treeNode.drawLineThrough || treeNode.pseudo ) {
-                    treeNode.drawLineThroughMe( hidePoint );
+                if (treeNode.drawLineThrough || treeNode.pseudo) {
+                    treeNode.drawLineThroughMe(hidePoint);
                 }
             }
             treeNode.connector = connLine;
@@ -1352,6 +1357,8 @@
             this.nodeHTMLid = nodeStructure.HTMLid;
 
             this.children = [];
+
+	    this.parentConnector = (nodeStructure.parentConnector) ? nodeStructure.parentConnector : null;
 
             return this;
         },
